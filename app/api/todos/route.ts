@@ -5,6 +5,16 @@ import { TODO_CREATE_FAIL, TODO_FETCH_FAIL } from "@/lib/http/errorMessages";
 import { logError } from "@/lib/logger/logger";
 import { TodoWhereInput } from "@/app/generated/prisma/models/Todo";
 import { TodoStatusFilter } from "@/lib/todos/types";
+import { z } from "zod";
+import {
+  todoDescriptionRule,
+  todoTitleRule,
+} from "@/lib/validation/todoValidationRules";
+
+const createTodoSchema = z.object({
+  title: todoTitleRule(),
+  description: todoDescriptionRule(),
+});
 
 export const GET = async (request: NextRequest) => {
   try {
@@ -44,8 +54,10 @@ export const GET = async (request: NextRequest) => {
 export const POST = async (request: NextRequest) => {
   try {
     const body = await request.json();
+    const validatedBody = createTodoSchema.parse(body);
+
     const newTodo = await prisma.todo.create({
-      data: body,
+      data: validatedBody,
     });
 
     return NextResponse.json(newTodo, { status: StatusCode.CREATED });

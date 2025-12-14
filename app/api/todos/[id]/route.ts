@@ -7,6 +7,13 @@ import {
   TODO_UPDATE_FAIL,
 } from "@/lib/http/errorMessages";
 import { StatusCode } from "@/lib/http/StatusCode";
+import {
+  todoDescriptionRule,
+  todoOrderRule,
+  todoStatusRule,
+  todoTitleRule,
+} from "@/lib/validation/todoValidationRules";
+import { z } from "zod";
 
 interface TodoIdRouteParams {
   id: string;
@@ -16,6 +23,13 @@ interface TodoIdRouteContext {
   params: Promise<TodoIdRouteParams>;
 }
 
+const updateTodoSchema = z.object({
+  title: todoTitleRule().optional(),
+  description: todoDescriptionRule(),
+  status: todoStatusRule().optional(),
+  order: todoOrderRule().optional(),
+});
+
 export const PUT = async (
   request: NextRequest,
   { params }: TodoIdRouteContext
@@ -23,9 +37,11 @@ export const PUT = async (
   try {
     const { id } = await params;
     const body = await request.json();
+    const validatedBody = updateTodoSchema.parse(body);
+
     const newTodo = await prisma.todo.update({
       where: { id },
-      data: body,
+      data: validatedBody,
     });
 
     return NextResponse.json(newTodo, { status: StatusCode.OK });
