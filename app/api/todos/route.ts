@@ -3,10 +3,30 @@ import { NextRequest, NextResponse } from "next/server";
 import { StatusCode } from "@/lib/http/StatusCode";
 import { TODO_CREATE_FAIL, TODO_FETCH_FAIL } from "@/lib/http/errorMessages";
 import { logError } from "@/lib/logger/logger";
+import { TodoWhereInput } from "@/app/generated/prisma/models/Todo";
+import { TodoStatusFilter } from "@/lib/todos/types";
 
-export const GET = async () => {
+export const GET = async (request: NextRequest) => {
   try {
+    const searchParams = request.nextUrl.searchParams;
+
+    const where: TodoWhereInput = {};
+    const titleQuery = searchParams.get("title");
+    const statusParam = searchParams.get("status");
+
+    if (titleQuery) {
+      where.title = { contains: titleQuery, mode: "insensitive" };
+    }
+
+    if (
+      statusParam === TodoStatusFilter.COMPLETED ||
+      statusParam === TodoStatusFilter.PENDING
+    ) {
+      where.status = statusParam;
+    }
+
     const todos = await prisma.todo.findMany({
+      where,
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     });
 

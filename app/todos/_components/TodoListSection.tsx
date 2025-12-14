@@ -10,6 +10,7 @@ import { TodoListSkeleton } from "./TodoListSkeleton";
 import { TodoListError } from "./TodoListError";
 import { TodoFilters } from "./TodoFilters";
 import { TodoStatusFilter } from "@/lib/todos/types";
+import { TODO_QUERY } from "@/lib/http/queries";
 
 export function TodoListSection() {
   const [statusFilter, setStatusFilter] = useState<TodoStatusFilter>(
@@ -24,8 +25,8 @@ export function TodoListSection() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["todos"],
-    queryFn: fetchTodoList,
+    queryKey: [TODO_QUERY, statusFilter, searchQuery],
+    queryFn: () => fetchTodoList(statusFilter, searchQuery),
   });
 
   const handleFilterChange = (filter: TodoStatusFilter) => {
