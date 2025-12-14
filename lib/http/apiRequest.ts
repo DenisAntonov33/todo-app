@@ -12,5 +12,12 @@ export const apiRequest = async <T>(
     headers,
   });
 
+  if (!response.ok) {
+    const error = await response
+      .json()
+      .catch(() => ({ error: "Request failed" }));
+    throw new Error(error.error || "Request failed");
+  }
+
   return response.json();
 };

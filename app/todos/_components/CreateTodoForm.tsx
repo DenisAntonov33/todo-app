@@ -32,6 +32,7 @@ export function CreateTodoForm() {
       title={title}
       description={description}
       isSubmitting={createTodoMutation.isPending}
+      errorMessage={createTodoMutation.error?.message}
       onTitleChange={setTitle}
       onDescriptionChange={setDescription}
       onSave={createTodoMutation.mutate}
