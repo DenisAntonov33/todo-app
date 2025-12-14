@@ -8,6 +8,7 @@ import { updateTodo } from "@/lib/todos/updateTodo";
 import { TODO_QUERY } from "@/lib/http/queries";
 import { deleteTodo } from "@/lib/todos/deleteTodo";
 import { TodoStatus } from "@/app/generated/prisma/enums";
+import { Todo } from "@/app/generated/prisma/browser";
 
 interface TodoItemProps {
   todo: TodoModel;
@@ -38,11 +39,30 @@ export function TodoItem({ todo }: TodoItemProps) {
   });
 
   const updateTodoStatusMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (todo: Todo) => {
       const newStatus = isCompleted ? TodoStatus.pending : TodoStatus.completed;
       await updateTodo({ ...todo, status: newStatus });
     },
-    onSuccess: async () => {
+    onMutate: async newTodo => {
+      await queryClient.cancelQueries({ queryKey: [TODO_QUERY] });
+
+      const previousTodoList = queryClient.getQueryData([TODO_QUERY]);
+
+      queryClient.setQueryData<Todo[]>([TODO_QUERY], oldData => {
+        if (!oldData) return oldData;
+        return oldData.map(todoItem =>
+          todoItem.id === newTodo.id ? newTodo : todoItem
+        );
+      });
+
+      return { previousTodoList };
+    },
+    onError: (_err, _todo, context) => {
+      if (context?.previousTodoList) {
+        queryClient.setQueryData([TODO_QUERY], context.previousTodoList);
+      }
+    },
+    onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: [TODO_QUERY] });
     },
   });
@@ -61,7 +81,10 @@ export function TodoItem({ todo }: TodoItemProps) {
   };
 
   const handleToggleStatus = () => {
-    updateTodoStatusMutation.mutate();
+    const newStatus = isCompleted ? TodoStatus.pending : TodoStatus.completed;
+    const newTodo = { ...todo, status: newStatus };
+
+    updateTodoStatusMutation.mutate(newTodo);
   };
 
   const isCompleted = todo.status === "completed";
