@@ -1,3 +1,9 @@
+import { CreateTodoForm } from "@/app/todos/_components/CreateTodoForm";
+
 export default function TodosPage() {
-  return <div>Todos</div>;
+  return (
+    <div>
+      <CreateTodoForm />
+    </div>
+  );
 }
