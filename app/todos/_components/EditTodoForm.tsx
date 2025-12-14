@@ -39,6 +39,8 @@ export function EditTodoForm({
     onSave();
   };
 
+  const isSubmitDisabled = isSubmitting || !title;
+
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
       <div className="flex flex-col gap-2">
@@ -86,7 +88,7 @@ export function EditTodoForm({
       <div className="flex gap-4">
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitDisabled}
           className="cursor-pointer flex h-12 flex-1 items-center justify-center rounded-full bg-foreground px-6 text-background transition-colors hover:bg-[#383838] disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-[#ccc]"
         >
           {isSubmitting ? "Saving..." : "Save"}
