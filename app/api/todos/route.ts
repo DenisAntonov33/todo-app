@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { StatusCode } from "@/lib/http/StatusCode";
 import { TODO_CREATE_FAIL, TODO_FETCH_FAIL } from "@/lib/http/errorMessages";
 import { logError } from "@/lib/logger/logger";
 import { TodoWhereInput } from "@/app/generated/prisma/models/Todo";
@@ -10,6 +9,7 @@ import {
   todoDescriptionRule,
   todoTitleRule,
 } from "@/lib/validation/todoValidationRules";
+import { StatusCodes } from "http-status-codes";
 
 const createTodoSchema = z.object({
   title: todoTitleRule(),
@@ -46,7 +46,7 @@ export const GET = async (request: NextRequest) => {
 
     return NextResponse.json(
       { error: TODO_FETCH_FAIL },
-      { status: StatusCode.INTERNAL_SERVER_ERROR }
+      { status: StatusCodes.INTERNAL_SERVER_ERROR }
     );
   }
 };
@@ -60,13 +60,13 @@ export const POST = async (request: NextRequest) => {
       data: validatedBody,
     });
 
-    return NextResponse.json(newTodo, { status: StatusCode.CREATED });
+    return NextResponse.json(newTodo, { status: StatusCodes.CREATED });
   } catch (error) {
     logError("error ==>", error);
 
     return NextResponse.json(
       { error: TODO_CREATE_FAIL },
-      { status: StatusCode.INTERNAL_SERVER_ERROR }
+      { status: StatusCodes.INTERNAL_SERVER_ERROR }
     );
   }
 };

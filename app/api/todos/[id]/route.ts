@@ -6,7 +6,6 @@ import {
   TODO_DELETE_SUCCESS,
   TODO_UPDATE_FAIL,
 } from "@/lib/http/errorMessages";
-import { StatusCode } from "@/lib/http/StatusCode";
 import {
   todoDescriptionRule,
   todoOrderRule,
@@ -14,6 +13,7 @@ import {
   todoTitleRule,
 } from "@/lib/validation/todoValidationRules";
 import { z } from "zod";
+import { StatusCodes } from "http-status-codes";
 
 interface TodoIdRouteParams {
   id: string;
@@ -44,13 +44,13 @@ export const PUT = async (
       data: validatedBody,
     });
 
-    return NextResponse.json(newTodo, { status: StatusCode.OK });
+    return NextResponse.json(newTodo, { status: StatusCodes.OK });
   } catch (error) {
     logError("error ==>", error);
 
     return NextResponse.json(
       { error: TODO_UPDATE_FAIL },
-      { status: StatusCode.INTERNAL_SERVER_ERROR }
+      { status: StatusCodes.INTERNAL_SERVER_ERROR }
     );
   }
 };
@@ -67,14 +67,14 @@ export const DELETE = async (
 
     return NextResponse.json(
       { message: TODO_DELETE_SUCCESS },
-      { status: StatusCode.OK }
+      { status: StatusCodes.OK }
     );
   } catch (error) {
     logError("error ==>", error);
 
     return NextResponse.json(
       { error: TODO_DELETE_FAIL },
-      { status: StatusCode.INTERNAL_SERVER_ERROR }
+      { status: StatusCodes.INTERNAL_SERVER_ERROR }
     );
   }
 };
