@@ -110,7 +110,8 @@ export function TodoItem({ todo }: TodoItemProps) {
         type="checkbox"
         checked={isCompleted}
         onChange={handleToggleStatus}
-        className="cursor-pointer mt-1 h-5 w-5 rounded border-black/[.08] text-foreground focus:ring-2 focus:ring-foreground dark:border-white/[.145]"
+        disabled={deleteMutation.isPending}
+        className="cursor-pointer mt-1 h-5 w-5 rounded border-black/[.08] text-foreground focus:ring-2 focus:ring-foreground disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145]"
         readOnly
       />
       <div className="flex flex-1 flex-col gap-2">
@@ -127,16 +128,18 @@ export function TodoItem({ todo }: TodoItemProps) {
         <button
           type="button"
           onClick={handleEdit}
-          className="cursor-pointer rounded-md border border-black/[.08] bg-white px-3 py-1.5 text-sm font-medium text-black transition-colors hover:bg-black/[.04] dark:border-white/[.145] dark:bg-black dark:text-zinc-50 dark:hover:bg-[#1a1a1a]"
+          disabled={deleteMutation.isPending}
+          className="cursor-pointer rounded-md border border-black/[.08] bg-white px-3 py-1.5 text-sm font-medium text-black transition-colors hover:bg-black/[.04] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145] dark:bg-black dark:text-zinc-50 dark:hover:bg-[#1a1a1a]"
         >
           Edit
         </button>
         <button
           type="button"
           onClick={handleDelete}
-          className="cursor-pointer rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-900/30 dark:bg-black dark:text-red-400 dark:hover:bg-red-900/20"
+          disabled={deleteMutation.isPending}
+          className="w-24 cursor-pointer rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900/30 dark:bg-black dark:text-red-400 dark:hover:bg-red-900/20"
         >
-          Delete
+          {deleteMutation.isPending ? "Deleting..." : "Delete"}
         </button>
       </div>
     </div>
