@@ -114,7 +114,7 @@ export function TodoItem({ todo }: TodoItemProps) {
         checked={isCompleted}
         onChange={handleToggleStatus}
         disabled={deleteMutation.isPending}
-        className="cursor-pointer mt-1 h-5 w-5 rounded border-black/[.08] text-foreground focus:ring-2 focus:ring-foreground disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145]"
+        className="cursor-pointer mt-1 h-5 w-5 rounded border-black/[.08] text-foreground focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145] dark:focus:ring-blue-500"
         readOnly
       />
       <div className="flex flex-1 flex-col gap-2">
