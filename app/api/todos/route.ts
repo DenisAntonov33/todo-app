@@ -10,6 +10,8 @@ import {
   todoTitleRule,
 } from "@/lib/validation/todoValidationRules";
 import { StatusCodes } from "http-status-codes";
+import { requireAuth } from "@/lib/auth/auth";
+import { isAuthError, returnUnauthorizedError } from "@/lib/auth/errorHandlers";
 
 const createTodoSchema = z.object({
   title: todoTitleRule(),
@@ -18,9 +20,12 @@ const createTodoSchema = z.object({
 
 export const GET = async (request: NextRequest) => {
   try {
-    const searchParams = request.nextUrl.searchParams;
+    const user = await requireAuth();
+    const where: TodoWhereInput = {
+      userId: user.id,
+    };
 
-    const where: TodoWhereInput = {};
+    const searchParams = request.nextUrl.searchParams;
     const titleQuery = searchParams.get("title");
     const statusParam = searchParams.get("status");
 
@@ -44,6 +49,10 @@ export const GET = async (request: NextRequest) => {
   } catch (error) {
     logError("error ==>", error);
 
+    if (isAuthError(error)) {
+      return returnUnauthorizedError();
+    }
+
     return NextResponse.json(
       { error: TODO_FETCH_FAIL },
       { status: StatusCodes.INTERNAL_SERVER_ERROR }
@@ -63,6 +72,10 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json(newTodo, { status: StatusCodes.CREATED });
   } catch (error) {
     logError("error ==>", error);
+
+    if (isAuthError(error)) {
+      return returnUnauthorizedError();
+    }
 
     return NextResponse.json(
       { error: TODO_CREATE_FAIL },

@@ -4,6 +4,7 @@ import { logError } from "@/lib/logger/logger";
 import {
   TODO_DELETE_FAIL,
   TODO_DELETE_SUCCESS,
+  TODO_NOT_FOUND,
   TODO_UPDATE_FAIL,
 } from "@/lib/http/errorMessages";
 import {
@@ -14,6 +15,8 @@ import {
 } from "@/lib/validation/todoValidationRules";
 import { z } from "zod";
 import { StatusCodes } from "http-status-codes";
+import { isAuthError, returnUnauthorizedError } from "@/lib/auth/errorHandlers";
+import { requireAuth } from "@/lib/auth/auth";
 
 interface TodoIdRouteParams {
   id: string;
@@ -35,9 +38,22 @@ export const PUT = async (
   { params }: TodoIdRouteContext
 ) => {
   try {
+    const user = await requireAuth();
+
     const { id } = await params;
     const body = await request.json();
     const validatedBody = updateTodoSchema.parse(body);
+
+    const todo = await prisma.todo.findUnique({
+      where: { id },
+    });
+
+    if (!todo || todo.userId !== user.id) {
+      return NextResponse.json(
+        { error: TODO_NOT_FOUND },
+        { status: StatusCodes.NOT_FOUND }
+      );
+    }
 
     const newTodo = await prisma.todo.update({
       where: { id },
@@ -47,6 +63,10 @@ export const PUT = async (
     return NextResponse.json(newTodo, { status: StatusCodes.OK });
   } catch (error) {
     logError("error ==>", error);
+
+    if (isAuthError(error)) {
+      return returnUnauthorizedError();
+    }
 
     return NextResponse.json(
       { error: TODO_UPDATE_FAIL },
@@ -60,7 +80,22 @@ export const DELETE = async (
   { params }: TodoIdRouteContext
 ) => {
   try {
+    const user = await requireAuth();
+
     const { id } = await params;
+
+    const todo = await prisma.todo.findUnique({
+      where: { id },
+    });
+
+    // Don't distinguish between "not found" and "forbidden" to prevent resource enumeration
+    if (!todo || todo.userId !== user.id) {
+      return NextResponse.json(
+        { error: TODO_NOT_FOUND },
+        { status: StatusCodes.NOT_FOUND }
+      );
+    }
+
     await prisma.todo.delete({
       where: { id },
     });
@@ -71,6 +106,10 @@ export const DELETE = async (
     );
   } catch (error) {
     logError("error ==>", error);
+
+    if (isAuthError(error)) {
+      return returnUnauthorizedError();
+    }
 
     return NextResponse.json(
       { error: TODO_DELETE_FAIL },
