@@ -1,4 +1,4 @@
-import { CreateTodoForm } from "@/app/todos/_components/CreateTodoForm";
+import { CollapsibleCreateForm } from "@/app/todos/_components/CollapsibleCreateForm";
 import { TodoListSection } from "@/app/todos/_components/TodoListSection";
 import { BackButton } from "@/lib/components/BackButton";
 import { QueryClient } from "@tanstack/react-query";
@@ -28,12 +28,7 @@ export default async function TodosPage() {
       </header>
 
       <div className="flex flex-col gap-12">
-        <div className="flex flex-col gap-6">
-          <h2 className="text-xl font-semibold text-black dark:text-zinc-50">
-            Create New Todo
-          </h2>
-          <CreateTodoForm />
-        </div>
+        <CollapsibleCreateForm />
 
         <TodoListSection />
       </div>
