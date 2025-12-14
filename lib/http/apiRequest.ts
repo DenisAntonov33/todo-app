@@ -1,6 +1,9 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const apiRequest = async (url: string, options: ResponseInit = {}) => {
+export const apiRequest = async <T>(
+  url: string,
+  options: RequestInit = {}
+): Promise<T> => {
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
 

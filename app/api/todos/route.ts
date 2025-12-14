@@ -22,9 +22,11 @@ export const GET = async () => {
 export const POST = async (request: NextRequest) => {
   try {
     const body = await request.json();
-    const newTodo = await prisma.todo.create(body);
+    const newTodo = await prisma.todo.create({
+      data: body,
+    });
 
-    NextResponse.json(newTodo, { status: StatusCode.CREATED });
+    return NextResponse.json(newTodo, { status: StatusCode.CREATED });
   } catch (error) {
     logError("error ==>", error);
 
