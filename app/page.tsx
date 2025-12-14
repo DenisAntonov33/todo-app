@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth/auth";
 
-export default function Home() {
-  const isAuthorized = true; // Change this to toggle between authorized/unauthorized sections
+export default async function Home() {
+  const user = await getCurrentUser();
 
   return (
     <div className="flex w-full flex-col items-center gap-8">
@@ -9,7 +10,7 @@ export default function Home() {
         Todo App
       </h1>
 
-      {isAuthorized ? (
+      {!!user ? (
         <section className="flex w-full flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link
             href="/todos"

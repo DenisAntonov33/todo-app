@@ -2,42 +2,50 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { signup } from "@/lib/auth/signup";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const signupMutation = useMutation({
+    mutationFn: async () => {
+      return await signup({ email, password });
+    },
+    onSuccess: () => {
+      // Invalidate auth query to refresh user state
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      // Redirect to todos page after successful signup
+      router.push("/todos");
+      router.refresh();
+    },
+  });
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-    setErrorMessage(null);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    setErrorMessage(null);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage(null);
 
     // Basic validation
     if (!email || !password) {
-      setErrorMessage("Please fill in all fields");
-      setIsSubmitting(false);
       return;
     }
 
-    // TODO: Implement actual signup logic
-    setTimeout(() => {
-      setIsSubmitting(false);
-      // Simulated error for demo
-      // setErrorMessage("Email already exists");
-    }, 1000);
+    signupMutation.mutate();
   };
+
+  const isSubmitting = signupMutation.isPending;
+  const errorMessage = signupMutation.error?.message || null;
 
   return (
     <div className="flex w-full flex-col items-center gap-8">
@@ -71,6 +79,7 @@ export default function SignupPage() {
               className="rounded-md border border-black/[.08] bg-white px-4 py-2 text-black transition-colors focus:border-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
               placeholder="Enter your email"
               autoComplete="email"
+              required
             />
           </div>
 
@@ -90,6 +99,7 @@ export default function SignupPage() {
               className="rounded-md border border-black/[.08] bg-white px-4 py-2 text-black transition-colors focus:border-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
               placeholder="Enter your password"
               autoComplete="new-password"
+              required
             />
           </div>
 
@@ -121,4 +131,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
