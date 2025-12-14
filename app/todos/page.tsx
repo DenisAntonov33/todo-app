@@ -1,8 +1,17 @@
 import { CreateTodoForm } from "@/app/todos/_components/CreateTodoForm";
 import { TodoListSection } from "@/app/todos/_components/TodoListSection";
 import { BackButton } from "@/lib/components/BackButton";
+import { QueryClient } from "@tanstack/react-query";
+import { fetchTodoList } from "@/lib/todos/fetchTodoList";
 
-export default function TodosPage() {
+export default async function TodosPage() {
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["todos"],
+    queryFn: fetchTodoList,
+  });
+
   return (
     <div className="flex w-full flex-col gap-8">
       <div className="flex items-center gap-4">
