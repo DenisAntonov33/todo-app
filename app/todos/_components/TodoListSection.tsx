@@ -11,12 +11,19 @@ import { TodoListError } from "./TodoListError";
 import { TodoFilters } from "./TodoFilters";
 import { TodoStatusFilter } from "@/lib/todos/types";
 import { TODO_QUERY } from "@/lib/http/queries";
+import { useDebounceValue } from "@/lib/hooks/useDebounceValue";
+
+const TODO_SEARCH_DEBOUNCE_MS = 500;
 
 export function TodoListSection() {
   const [statusFilter, setStatusFilter] = useState<TodoStatusFilter>(
     TodoStatusFilter.ALL
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounceValue(
+    searchQuery,
+    TODO_SEARCH_DEBOUNCE_MS
+  );
 
   const {
     data = [],
@@ -25,8 +32,8 @@ export function TodoListSection() {
     error,
     refetch,
   } = useQuery({
-    queryKey: [TODO_QUERY, statusFilter, searchQuery],
-    queryFn: () => fetchTodoList(statusFilter, searchQuery),
+    queryKey: [TODO_QUERY, statusFilter, debouncedSearchQuery],
+    queryFn: () => fetchTodoList(statusFilter, debouncedSearchQuery),
   });
 
   const handleFilterChange = (filter: TodoStatusFilter) => {
