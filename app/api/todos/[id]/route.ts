@@ -28,7 +28,7 @@ export const PUT = async (
       data: body,
     });
 
-    NextResponse.json(newTodo, { status: StatusCode.OK });
+    return NextResponse.json(newTodo, { status: StatusCode.OK });
   } catch (error) {
     logError("error ==>", error);
 

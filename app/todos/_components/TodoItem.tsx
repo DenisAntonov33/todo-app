@@ -1,21 +1,60 @@
 "use client";
 
 import type { TodoModel } from "@/app/generated/prisma/models/Todo";
+import { useState } from "react";
+import { EditTodoForm } from "@/app/todos/_components/EditTodoForm";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateTodo } from "@/lib/todos/updateTodo";
+import { TODO_QUERY } from "@/lib/http/queries";
 
 interface TodoItemProps {
   todo: TodoModel;
 }
 
 export function TodoItem({ todo }: TodoItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(todo.title);
+  const [description, setDescription] = useState(todo.description);
+
   const handleDelete = () => {
     // Empty handler
   };
 
   const handleEdit = () => {
-    // Empty handler
+    setIsEditing(true);
   };
 
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  const queryClient = useQueryClient();
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      await updateTodo({ ...todo, title, description });
+    },
+    onSuccess: async () => {
+      setIsEditing(false);
+      await queryClient.invalidateQueries({ queryKey: [TODO_QUERY] });
+    },
+  });
+
   const isCompleted = todo.status === "completed";
+
+  if (isEditing) {
+    return (
+      <EditTodoForm
+        onSave={updateMutation.mutate}
+        onCancel={handleCancel}
+        title={title}
+        description={description ?? ""}
+        isSubmitting={updateMutation.isPending}
+        errorMessage={updateMutation.error?.message}
+        onTitleChange={setTitle}
+        onDescriptionChange={setDescription}
+      />
+    );
+  }
 
   return (
     <div className="flex items-start gap-4 rounded-md border border-black/[.08] bg-white p-4 dark:border-white/[.145] dark:bg-black">
