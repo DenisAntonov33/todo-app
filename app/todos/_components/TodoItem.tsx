@@ -6,6 +6,7 @@ import { EditTodoForm } from "@/app/todos/_components/EditTodoForm";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateTodo } from "@/lib/todos/updateTodo";
 import { TODO_QUERY } from "@/lib/http/queries";
+import { deleteTodo } from "@/lib/todos/deleteTodo";
 
 interface TodoItemProps {
   todo: TodoModel;
@@ -15,10 +16,6 @@ export function TodoItem({ todo }: TodoItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(todo.title);
   const [description, setDescription] = useState(todo.description);
-
-  const handleDelete = () => {
-    // Empty handler
-  };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -38,6 +35,19 @@ export function TodoItem({ todo }: TodoItemProps) {
       await queryClient.invalidateQueries({ queryKey: [TODO_QUERY] });
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      await deleteTodo(todo.id);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: [TODO_QUERY] });
+    },
+  });
+
+  const handleDelete = () => {
+    deleteMutation.mutate();
+  };
 
   const isCompleted = todo.status === "completed";
 
