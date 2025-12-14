@@ -76,8 +76,11 @@ export function TodoItem({ todo }: TodoItemProps) {
     },
   });
 
-  const handleDelete = () => {
-    deleteMutation.mutate();
+  const handleDelete = (todo: Todo) => {
+    // TODO add nice confirmation modal in the future
+    if (confirm("Are you sure you want to delete todo " + todo.title + "?")) {
+      deleteMutation.mutate();
+    }
   };
 
   const handleToggleStatus = () => {
@@ -129,13 +132,13 @@ export function TodoItem({ todo }: TodoItemProps) {
           type="button"
           onClick={handleEdit}
           disabled={deleteMutation.isPending}
-          className="cursor-pointer rounded-md border border-black/[.08] bg-white px-3 py-1.5 text-sm font-medium text-black transition-colors hover:bg-black/[.04] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145] dark:bg-black dark:text-zinc-50 dark:hover:bg-[#1a1a1a]"
+          className="w-20 cursor-pointer rounded-md border border-black/[.08] bg-white px-3 py-1.5 text-sm font-medium text-black transition-colors hover:bg-black/[.04] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145] dark:bg-black dark:text-zinc-50 dark:hover:bg-[#1a1a1a]"
         >
           Edit
         </button>
         <button
           type="button"
-          onClick={handleDelete}
+          onClick={() => handleDelete(todo)}
           disabled={deleteMutation.isPending}
           className="w-24 cursor-pointer rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900/30 dark:bg-black dark:text-red-400 dark:hover:bg-red-900/20"
         >
