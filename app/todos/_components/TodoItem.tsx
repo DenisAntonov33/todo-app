@@ -46,20 +46,25 @@ export function TodoItem({ todo }: TodoItemProps) {
     },
     onMutate: async newTodo => {
       await queryClient.cancelQueries({ queryKey: [TODO_QUERY] });
-      const previousTodoList = queryClient.getQueryData([TODO_QUERY]);
+      const prevQueries = queryClient.getQueriesData({ queryKey: TODO_QUERY });
 
-      queryClient.setQueryData<Todo[]>([TODO_QUERY], oldData => {
-        if (!oldData) return oldData;
-        return oldData.map(todoItem =>
-          todoItem.id === newTodo.id ? newTodo : todoItem
-        );
+      prevQueries.forEach(([queryKey, data]) => {
+        if (Array.isArray(data)) {
+          queryClient.setQueryData<Todo[]>(queryKey, old => {
+            if (!old) return old;
+            return old.map(t => (t.id === newTodo.id ? newTodo : t));
+          });
+        }
       });
 
-      return { previousTodoList };
+      return { prevQueries };
     },
     onError: (_err, _todo, context) => {
-      if (context?.previousTodoList) {
-        queryClient.setQueryData([TODO_QUERY], context.previousTodoList);
+      const prevQueries = context?.prevQueries;
+      if (prevQueries) {
+        prevQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
       }
       showToast(`Error while updating todo "${todo.title}"`);
     },
