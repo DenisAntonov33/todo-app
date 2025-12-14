@@ -4,6 +4,7 @@ import type { TodoModel } from "@/app/generated/prisma/models/Todo";
 import { TodoItem } from "./TodoItem";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTodoList } from "@/lib/todos/fetchTodoList";
+import { EmptyTodoList } from "@/app/todos/_components/EmptyTodoList";
 
 // TODO delete it later
 const mockTodos: TodoModel[] = [
@@ -65,15 +66,19 @@ export function TodoListSection() {
     queryFn: fetchTodoList,
   });
 
+  const isEmptyList = data.length === 0;
+
   return (
     <section className="flex w-full flex-col gap-4">
       <h2 className="text-2xl font-semibold text-black dark:text-zinc-50">
         Todos
       </h2>
       <div className="flex flex-col gap-3">
-        {data.map(todo => (
-          <TodoItem key={todo.id} todo={todo} />
-        ))}
+        {isEmptyList ? (
+          <EmptyTodoList />
+        ) : (
+          data.map(todo => <TodoItem key={todo.id} todo={todo} />)
+        )}
       </div>
     </section>
   );
