@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateTodo } from "@/lib/todos/updateTodo";
 import { TODO_QUERY } from "@/lib/http/queries";
 import { deleteTodo } from "@/lib/todos/deleteTodo";
+import { TodoStatus } from "@/app/generated/prisma/enums";
 
 interface TodoItemProps {
   todo: TodoModel;
@@ -26,12 +27,22 @@ export function TodoItem({ todo }: TodoItemProps) {
   };
 
   const queryClient = useQueryClient();
-  const updateMutation = useMutation({
+  const updateTodoTextMutation = useMutation({
     mutationFn: async () => {
       await updateTodo({ ...todo, title, description });
     },
     onSuccess: async () => {
       setIsEditing(false);
+      await queryClient.invalidateQueries({ queryKey: [TODO_QUERY] });
+    },
+  });
+
+  const updateTodoStatusMutation = useMutation({
+    mutationFn: async () => {
+      const newStatus = isCompleted ? TodoStatus.pending : TodoStatus.completed;
+      await updateTodo({ ...todo, status: newStatus });
+    },
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [TODO_QUERY] });
     },
   });
@@ -49,17 +60,21 @@ export function TodoItem({ todo }: TodoItemProps) {
     deleteMutation.mutate();
   };
 
+  const handleToggleStatus = () => {
+    updateTodoStatusMutation.mutate();
+  };
+
   const isCompleted = todo.status === "completed";
 
   if (isEditing) {
     return (
       <EditTodoForm
-        onSave={updateMutation.mutate}
+        onSave={updateTodoTextMutation.mutate}
         onCancel={handleCancel}
         title={title}
         description={description ?? ""}
-        isSubmitting={updateMutation.isPending}
-        errorMessage={updateMutation.error?.message}
+        isSubmitting={updateTodoTextMutation.isPending}
+        errorMessage={updateTodoTextMutation.error?.message}
         onTitleChange={setTitle}
         onDescriptionChange={setDescription}
       />
@@ -71,7 +86,8 @@ export function TodoItem({ todo }: TodoItemProps) {
       <input
         type="checkbox"
         checked={isCompleted}
-        className="mt-1 h-5 w-5 rounded border-black/[.08] text-foreground focus:ring-2 focus:ring-foreground dark:border-white/[.145]"
+        onChange={handleToggleStatus}
+        className="cursor-pointer mt-1 h-5 w-5 rounded border-black/[.08] text-foreground focus:ring-2 focus:ring-foreground dark:border-white/[.145]"
         readOnly
       />
       <div className="flex flex-1 flex-col gap-2">
@@ -88,14 +104,14 @@ export function TodoItem({ todo }: TodoItemProps) {
         <button
           type="button"
           onClick={handleEdit}
-          className="rounded-md border border-black/[.08] bg-white px-3 py-1.5 text-sm font-medium text-black transition-colors hover:bg-black/[.04] dark:border-white/[.145] dark:bg-black dark:text-zinc-50 dark:hover:bg-[#1a1a1a]"
+          className="cursor-pointer rounded-md border border-black/[.08] bg-white px-3 py-1.5 text-sm font-medium text-black transition-colors hover:bg-black/[.04] dark:border-white/[.145] dark:bg-black dark:text-zinc-50 dark:hover:bg-[#1a1a1a]"
         >
           Edit
         </button>
         <button
           type="button"
           onClick={handleDelete}
-          className="rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-900/30 dark:bg-black dark:text-red-400 dark:hover:bg-red-900/20"
+          className="cursor-pointer rounded-md border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 dark:border-red-900/30 dark:bg-black dark:text-red-400 dark:hover:bg-red-900/20"
         >
           Delete
         </button>

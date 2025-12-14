@@ -6,7 +6,9 @@ import { logError } from "@/lib/logger/logger";
 
 export const GET = async () => {
   try {
-    const todos = await prisma.todo.findMany();
+    const todos = await prisma.todo.findMany({
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    });
 
     return NextResponse.json(todos);
   } catch (error) {
