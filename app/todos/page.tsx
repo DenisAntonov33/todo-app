@@ -1,17 +1,12 @@
-import Link from "next/link";
 import { CreateTodoForm } from "@/app/todos/_components/CreateTodoForm";
 import { TodoListSection } from "@/app/todos/_components/TodoListSection";
+import { BackButton } from "@/lib/components/BackButton";
 
 export default function TodosPage() {
   return (
     <div className="flex w-full flex-col gap-8">
       <div className="flex items-center gap-4">
-        <Link
-          href="/"
-          className="flex h-10 items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm font-medium transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-        >
-          ← Back
-        </Link>
+        <BackButton href="/" />
       </div>
 
       <header>
