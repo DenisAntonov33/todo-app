@@ -9,6 +9,7 @@ import { TODO_QUERY } from "@/lib/http/queries";
 import { deleteTodo } from "@/lib/todos/deleteTodo";
 import { TodoStatus } from "@/app/generated/prisma/enums";
 import { Todo } from "@/app/generated/prisma/browser";
+import { showToast } from "@/lib/ui/showToast";
 
 interface TodoItemProps {
   todo: TodoModel;
@@ -45,7 +46,6 @@ export function TodoItem({ todo }: TodoItemProps) {
     },
     onMutate: async newTodo => {
       await queryClient.cancelQueries({ queryKey: [TODO_QUERY] });
-
       const previousTodoList = queryClient.getQueryData([TODO_QUERY]);
 
       queryClient.setQueryData<Todo[]>([TODO_QUERY], oldData => {
@@ -61,6 +61,7 @@ export function TodoItem({ todo }: TodoItemProps) {
       if (context?.previousTodoList) {
         queryClient.setQueryData([TODO_QUERY], context.previousTodoList);
       }
+      showToast(`Error while updating todo "${todo.title}"`);
     },
     onSettled: async () => {
       await queryClient.invalidateQueries({ queryKey: [TODO_QUERY] });
@@ -73,6 +74,9 @@ export function TodoItem({ todo }: TodoItemProps) {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [TODO_QUERY] });
+    },
+    onError: () => {
+      showToast(`Error while deleting todo "${todo.title}"`);
     },
   });
 
