@@ -4,6 +4,8 @@ out
 build
 dist
 coverage
+README.md
+.github
 *.log
 .env*
 
