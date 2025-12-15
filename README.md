@@ -73,7 +73,7 @@ NEXT_PUBLIC_API_URL=""
 Set up the database schema using Prisma migrations:
 
 ```bash
-npx prisma migrate dev
+npm run prisma:migrate
 ```
 
 This will:
@@ -86,7 +86,7 @@ This will:
 If you need to regenerate the Prisma Client:
 
 ```bash
-npx prisma generate
+npm run prisma:generate
 ```
 
 ### 7. Run the Development Server
@@ -118,9 +118,9 @@ Open your browser and navigate to the URL to see the application.
 
 ### Database
 
-- `npx prisma migrate dev` - Create and apply database migrations
-- `npx prisma generate` - Generate Prisma Client
-- `npx prisma studio` - Open Prisma Studio to view/edit database data
+- `npm run prisma:migrate` - Create and apply database migrations
+- `npm run prisma:generate` - Generate Prisma Client
+- `npm run prisma:studio` - Open Prisma Studio to view/edit database data
 
 ## Project Structure
 
@@ -216,7 +216,7 @@ If you encounter database connection errors:
 If you see errors about Prisma Client not being found:
 
 ```bash
-npx prisma generate
+npm run prisma:generate
 ```
 
 ### Port Already in Use
