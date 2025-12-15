@@ -10,6 +10,7 @@ import { deleteTodo } from "@/lib/todos/deleteTodo";
 import { TodoStatus } from "@/app/generated/prisma/enums";
 import { Todo } from "@/app/generated/prisma/browser";
 import { showToast } from "@/lib/ui/showToast";
+import { showConfirmationModal } from "@/lib/ui/showConfirmationModal";
 
 interface TodoItemProps {
   todo: TodoModel;
@@ -91,8 +92,11 @@ export function TodoItem({ todo }: TodoItemProps) {
   });
 
   const handleDelete = (todo: Todo) => {
-    // TODO add nice confirmation modal in the future
-    if (confirm("Are you sure you want to delete todo " + todo.title + "?")) {
+    if (
+      showConfirmationModal(
+        "Are you sure you want to delete todo " + todo.title + "?"
+      )
+    ) {
       deleteMutation.mutate();
     }
   };
