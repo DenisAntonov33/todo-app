@@ -18,7 +18,7 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ user }, { status: StatusCodes.UNAUTHORIZED });
+    return NextResponse.json({ user }, { status: StatusCodes.OK });
   } catch (error) {
     logError("Get user error:", error);
 

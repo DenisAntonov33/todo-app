@@ -1,7 +1,7 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 
-const AUTH_COOKIE_NAME = "auth-token";
+export const AUTH_COOKIE_NAME = "auth-token";
 const secretKey = process.env.JWT_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
 
