@@ -17,7 +17,7 @@ export const apiRequest = async <T>(
 
   if (!response.ok) {
     if (response.status === StatusCodes.UNAUTHORIZED && !isPublicRoute(url)) {
-      // window.location.href = "/login";
+      window.location.href = "/login";
     }
 
     const error = await response

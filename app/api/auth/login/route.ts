@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: LOGIN_FAIL_WITH_INVALID_CREDENTIALS },
-        { status: 400 }
+        { status: StatusCodes.BAD_REQUEST }
       );
     }
 
