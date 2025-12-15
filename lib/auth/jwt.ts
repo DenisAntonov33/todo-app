@@ -1,5 +1,6 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
+import { logError } from "@/lib/logger/logger";
 
 export const AUTH_COOKIE_NAME = "auth-token";
 const secretKey = process.env.JWT_SECRET;
@@ -38,9 +39,9 @@ export const verifyToken = async (
   } catch (error) {
     // Log specific error for debugging
     if (error instanceof Error) {
-      console.error("JWT verification failed:", error.message);
+      logError("JWT verification failed:", error.message);
     } else {
-      console.error("JWT verification failed:", error);
+      logError("JWT verification failed:", error);
     }
     return null;
   }
