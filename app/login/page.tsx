@@ -2,42 +2,50 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { login } from "@/lib/auth/login";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const loginMutation = useMutation({
+    mutationFn: async () => {
+      return await login({ email, password });
+    },
+    onSuccess: () => {
+      // Invalidate auth query to refresh user state
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      // Redirect to todos page after successful login
+      router.push("/todos");
+      router.refresh();
+    },
+  });
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-    setErrorMessage(null);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
-    setErrorMessage(null);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage(null);
 
     // Basic validation
     if (!email || !password) {
-      setErrorMessage("Please fill in all fields");
-      setIsSubmitting(false);
       return;
     }
 
-    // TODO: Implement actual login logic
-    setTimeout(() => {
-      setIsSubmitting(false);
-      // Simulated error for demo
-      // setErrorMessage("Invalid email or password");
-    }, 1000);
+    loginMutation.mutate();
   };
+
+  const isSubmitting = loginMutation.isPending;
+  const errorMessage = loginMutation.error?.message || null;
 
   return (
     <div className="flex w-full flex-col items-center gap-8">
@@ -71,6 +79,7 @@ export default function LoginPage() {
               className="rounded-md border border-black/[.08] bg-white px-4 py-2 text-black transition-colors focus:border-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
               placeholder="Enter your email"
               autoComplete="email"
+              required
             />
           </div>
 
@@ -90,6 +99,7 @@ export default function LoginPage() {
               className="rounded-md border border-black/[.08] bg-white px-4 py-2 text-black transition-colors focus:border-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
               placeholder="Enter your password"
               autoComplete="current-password"
+              required
             />
           </div>
 
