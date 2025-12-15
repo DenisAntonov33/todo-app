@@ -227,57 +227,6 @@ If port 3000 is already in use, you can specify a different port:
 PORT=3001 npm run dev
 ```
 
-## Production Build
-
-To build the application for production:
-
-```bash
-npm run build
-npm start
-```
-
-The production build will be optimized and ready for deployment.
-
-## Continuous Deployment
-
-The project includes a GitHub Actions workflow that automatically:
-
-1. **Lints and builds** on every push and pull request to `main`/`master`
-2. **Deploys to Vercel** on successful builds to `main`/`master`
-
-### Setting Up GitHub Actions
-
-The workflow file is located at `.github/workflows/deploy.yml`. To enable automatic deployment:
-
-1. **Set up GitHub Secrets** in your repository settings (Settings → Secrets and variables → Actions):
-   - `DATABASE_URL` - Your Neon database connection string
-   - `JWT_SECRET` - Your JWT secret key
-   - `NEXT_PUBLIC_API_URL` - (Optional) Your API URL
-   - `VERCEL_TOKEN` - Your Vercel API token (get it from [Vercel Account Settings → Tokens](https://vercel.com/account/tokens))
-
-3. **Push to main/master branch**:
-   - The workflow will automatically run on push
-   - Check the Actions tab in GitHub to see the deployment status
-
-### Manual Deployment
-
-If you prefer to deploy manually to Vercel:
-
-1. Install Vercel CLI:
-   ```bash
-   npm i -g vercel
-   ```
-
-2. Deploy:
-   ```bash
-   vercel
-   ```
-
-3. For production deployment:
-   ```bash
-   vercel --prod
-   ```
-
 ## License
 
 This project was created as a coding assessment task.
