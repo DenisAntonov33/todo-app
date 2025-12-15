@@ -35,7 +35,10 @@ export function TodoItem({ todo }: TodoItemProps) {
     },
     onSuccess: async () => {
       setIsEditing(false);
-      await queryClient.invalidateQueries({ queryKey: [TODO_QUERY] });
+      await queryClient.invalidateQueries({
+        queryKey: [TODO_QUERY],
+        exact: false,
+      });
     },
   });
 
