@@ -46,7 +46,9 @@ export function TodoItem({ todo }: TodoItemProps) {
     },
     onMutate: async newTodo => {
       await queryClient.cancelQueries({ queryKey: [TODO_QUERY] });
-      const prevQueries = queryClient.getQueriesData({ queryKey: TODO_QUERY });
+      const prevQueries = queryClient.getQueriesData({
+        queryKey: [TODO_QUERY],
+      });
 
       prevQueries.forEach(([queryKey, data]) => {
         if (Array.isArray(data)) {
