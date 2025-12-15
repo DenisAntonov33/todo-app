@@ -2,6 +2,8 @@ import { getCurrentUser } from "@/lib/auth/auth";
 import { AuthorizedSection } from "@/app/_components/AuthorizedSection";
 import { UnauthorizedSection } from "@/app/_components/UnauthorizedSection";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const user = await getCurrentUser();
 
