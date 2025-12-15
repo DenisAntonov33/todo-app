@@ -3,18 +3,13 @@ import type { NextRequest } from "next/server";
 import { AUTH_COOKIE_NAME, verifyToken } from "@/lib/auth/jwt";
 import { StatusCodes } from "http-status-codes";
 import { UNAUTHORIZED_ERROR } from "@/lib/auth/errorHandlers";
+import { isPublicRoute } from "@/lib/auth/publicRoutes";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApiRoute = pathname.startsWith("/api");
 
-  // Public routes that don't require authentication
-  const publicRoutes = ["/login", "/signup", "/api/auth"];
-  const isPublicRoute = publicRoutes.some(
-    route => pathname.startsWith(route) || pathname === "/"
-  );
-
-  if (isPublicRoute) {
+  if (isPublicRoute(pathname)) {
     return NextResponse.next();
   }
 

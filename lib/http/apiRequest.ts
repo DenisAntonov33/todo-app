@@ -1,4 +1,5 @@
 import { StatusCodes } from "http-status-codes";
+import { isPublicRoute } from "@/lib/auth/publicRoutes";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -15,8 +16,8 @@ export const apiRequest = async <T>(
   });
 
   if (!response.ok) {
-    if (response.status === StatusCodes.UNAUTHORIZED) {
-      window.location.href = "/login";
+    if (response.status === StatusCodes.UNAUTHORIZED && !isPublicRoute(url)) {
+      // window.location.href = "/login";
     }
 
     const error = await response
