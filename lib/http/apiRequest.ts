@@ -1,3 +1,5 @@
+import { StatusCodes } from "http-status-codes";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const apiRequest = async <T>(
@@ -13,6 +15,10 @@ export const apiRequest = async <T>(
   });
 
   if (!response.ok) {
+    if (response.status === StatusCodes.UNAUTHORIZED) {
+      window.location.href = "/login";
+    }
+
     const error = await response
       .json()
       .catch(() => ({ error: "Request failed" }));
