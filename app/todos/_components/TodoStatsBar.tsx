@@ -1,8 +1,6 @@
 "use client";
 
 import type { TodoModel } from "@/app/generated/prisma/models/Todo";
-import { TodoStatus } from "@/app/generated/prisma/enums";
-import { useMemo } from "react";
 
 interface TodoStatsBarProps {
   todos: TodoModel[];
