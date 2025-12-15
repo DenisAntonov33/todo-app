@@ -62,11 +62,13 @@ export const GET = async (request: NextRequest) => {
 
 export const POST = async (request: NextRequest) => {
   try {
+    const user = await requireAuth();
+
     const body = await request.json();
     const validatedBody = createTodoSchema.parse(body);
 
     const newTodo = await prisma.todo.create({
-      data: validatedBody,
+      data: { ...validatedBody, User: { connect: { id: user.id } } },
     });
 
     return NextResponse.json(newTodo, { status: StatusCodes.CREATED });
