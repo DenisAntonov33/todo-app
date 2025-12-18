@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { TodoItem } from "./TodoItem";
 import { useQuery } from "@tanstack/react-query";
-import { fetchTodoList } from "@/lib/todos/fetchTodoList";
+import { fetchTodoList } from "@/lib/todos/fetchTodoList/fetchTodoList";
 import { EmptyTodoList } from "@/app/todos/_components/EmptyTodoList";
 import { TodoStatsBar } from "@/app/todos/_components/TodoStatsBar";
 import { TodoListSkeleton } from "./TodoListSkeleton";

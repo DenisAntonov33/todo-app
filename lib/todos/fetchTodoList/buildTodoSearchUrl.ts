@@ -1,12 +1,10 @@
-import { apiRequest } from "@/lib/http/apiRequest";
-import { Todo } from "@/app/generated/prisma/client";
-import { TODO_ENDPOINT } from "@/lib/http/endpoints";
 import { TodoStatusFilter } from "@/lib/todos/types";
+import { TODO_ENDPOINT } from "@/lib/http/endpoints";
 
-export const fetchTodoList = async (
+export const buildTodoSearchUrl = (
   status = TodoStatusFilter.ALL,
   titleQuery = ""
-): Promise<Todo[]> => {
+): string => {
   const queryParams = new URLSearchParams();
 
   if (status !== TodoStatusFilter.ALL) {
@@ -24,5 +22,5 @@ export const fetchTodoList = async (
     url = `${TODO_ENDPOINT}?${queryString}`;
   }
 
-  return apiRequest(url);
+  return url;
 };
