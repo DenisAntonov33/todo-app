@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TodoItem } from "./TodoItem";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTodoList } from "@/lib/todos/fetchTodoList/fetchTodoList";
@@ -12,14 +12,25 @@ import { TodoFilters } from "./TodoFilters";
 import { TodoStatusFilter } from "@/lib/todos/types";
 import { TODO_QUERY } from "@/lib/http/queries";
 import { useDebounceValue } from "@/lib/hooks/useDebounceValue";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { parseStatusFilter } from "@/lib/todos/parseStatusFilter";
 
 const TODO_SEARCH_DEBOUNCE_MS = 500;
 
+const TITLE_QUERY_PARAM = "title";
+const STATUS_QUERY_PARAM = "status";
+
 export function TodoListSection() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [statusFilter, setStatusFilter] = useState<TodoStatusFilter>(
-    TodoStatusFilter.ALL
+    parseStatusFilter(searchParams.get(STATUS_QUERY_PARAM) ?? "")
   );
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get(TITLE_QUERY_PARAM) || ""
+  );
   const debouncedSearchQuery = useDebounceValue(
     searchQuery,
     TODO_SEARCH_DEBOUNCE_MS
@@ -35,6 +46,31 @@ export function TodoListSection() {
     queryKey: [TODO_QUERY, statusFilter, debouncedSearchQuery],
     queryFn: () => fetchTodoList(statusFilter, debouncedSearchQuery),
   });
+
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+
+    if (statusFilter === TodoStatusFilter.ALL) {
+      newSearchParams.delete("status");
+    } else {
+      newSearchParams.set("status", statusFilter);
+    }
+
+    if (debouncedSearchQuery === "") {
+      newSearchParams.delete("title");
+    } else {
+      newSearchParams.set("title", debouncedSearchQuery);
+    }
+
+    let newSearchParamsString = newSearchParams.toString();
+
+    if (newSearchParamsString) {
+      newSearchParamsString = `?${newSearchParamsString}`;
+    }
+
+    router.replace(pathname + newSearchParamsString);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter, debouncedSearchQuery]);
 
   const handleFilterChange = (filter: TodoStatusFilter) => {
     setStatusFilter(filter);
