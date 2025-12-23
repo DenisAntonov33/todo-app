@@ -1,17 +1,14 @@
 import { CollapsibleCreateForm } from "@/app/todos/_components/CollapsibleCreateForm";
 import { TodoListSection } from "@/app/todos/_components/TodoListSection";
 import { BackButton } from "@/lib/components/BackButton";
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from "@tanstack/react-query";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { fetchTodoList } from "@/lib/todos/fetchTodoList";
 import { TODO_QUERY } from "@/lib/http/queries";
 import { TodoStatusFilter } from "@/lib/todos/types";
+import { getQueryClient } from "@/lib/providers/getQueryClient";
 
 export default async function TodosPage() {
-  const queryClient = new QueryClient();
+  const queryClient = getQueryClient();
 
   // TODO: get selected filters from URL in the future
   await queryClient.prefetchQuery({
