@@ -15,8 +15,7 @@ export const apiRequestServer = async <T>(
 ): Promise<T> => {
   const cookieStore = await cookies();
 
-  const cookieName = process.env.AUTH_COOKIE_NAME || "auth-token";
-  const authCookie = cookieStore.get(cookieName);
+  const authCookie = cookieStore.get("auth-token");
 
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
